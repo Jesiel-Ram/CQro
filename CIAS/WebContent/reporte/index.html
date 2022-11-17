@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>CIAS</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+	<script src="assets/js/xlsx.full.min.js"></script>
+	<script src="assets/js/FileSaver.min.js"></script>
+	<script src="assets/js/tableexport.min.js"></script>
+
+	<link rel="icon" href="assets/img/CQ-Logo.svg">
+	<script src="report/js/jquery.min.js"></script>
+	<link rel="stylesheet" href="report/css/bootstrap.min.css">
+	<link rel="stylesheet" href="report/css/bootstrap-theme.min.css">
+	<script src="report/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="report/css/jquery.dataTables.min.css" />
+	<script type="text/javascript" src="report/js/datatables.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="report/pdf/all.min.css" />
+	<script src="datepicker/moment.min.js"></script>
+	<script type="text/javascript" src="datepicker/js/bootstrap-datepicker.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="datepicker/css/bootstrap-datepicker.min.css" />
+	<script type="text/javascript" src="datepicker/js/daterangepicker.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="datepicker/css/daterangepicker.css" />
+
+	<style type="text/css">
+		.grad1 {
+			background-color: blue;
+			background-color: transparent;
+			background-color: white;
+
+			border: 10px solid #005195;
+			height: 19px;
+			margin-bottom: -59px
+		}
+	</style>
+
+
+</head>
+
+<body>
+	<br />
+	<br />
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-4">
+				<img src="assets/img/cq.jpg" class="rounded float-left col-sm-6 col-xs-2 col-md-6 col-lg-6">
+			</div>
+		</div>
+
+		<div class="row">
+			<h1 align="center">CIAS</h1>
+		</div>
+
+		<div class="row" id="trigger">
+			<div style="border: 1px solid #ccc!important; border-radius: 16px; padding:16px; margin-bottom: 3%">
+
+				<center>
+					<label for="nomina">Búsqueda </label>
+					<input id="namesearch"
+						style="border: 1px solid #ccc!important; border-radius: 16px; width:180px; padding:16px; height: 30px"
+						type="text" onkeypress="pulsar(event)">
+
+					<button style="margin-left: 1%" type="button" class="btn btn-default" onClick="buscar()">
+						<span class="glyphicon glyphicon-search"></span>
+					</button>
+				</center>
+			</div>
+		</div>
+
+		<center>
+
+			<!-- Button trigger modal -->
+			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalNuevo">
+				Agregar
+			</button>
+
+			<!-- Modal -->
+			<div class="modal fade" id="modalNuevo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog modal-sm" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Agregar</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<label>Nombre</label>
+							<input type="text" name="" id="nombre" class="form-control input-sm">
+							<label>Primer Apellido</label>
+							<input type="text" name="" id="papellido" class="form-control input-sm">
+							<label>Segundo Apellido</label>
+							<input type="text" name="" id="sapellido" class="form-control input-sm">
+							<label>telefono</label>
+							<input type="email" name="" id="telefono" class="form-control input-sm">
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary" id="guardar">Guardar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Modal Actualizar -->
+			<div class="modal fade" id="actualizar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog modal-sm" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Actualizar datos</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<label>Id</label>
+							<input style="text-align: center;" type="text" name="" id="idU"
+								class="form-control input-sm" readonly="readonly">
+							<label>Nombre</label>
+							<input type="text" name="" id="nombreU" class="form-control input-sm">
+							<label>Primer Apellido</label>
+							<input type="text" name="" id="papellidoU" class="form-control input-sm">
+							<label>Segundo Apellido</label>
+							<input type="text" name="" id="sapellidoU" class="form-control input-sm">
+							<label>telefono</label>
+							<input type="email" name="" id="telefonoU" class="form-control input-sm">
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary" id="update">Actualizar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+		</center>
+
+		<div class="row" id="trigger"
+			style="border: 1px solid #005195 !important; border-radius: 16px; padding: 16px;margin-top: 25px; display:none">
+
+			<div id="secret" class="col-xs-12 col-md-2">
+				<input class="form-control input-sm" name="min" id="min" type="hidden" placeholder="Fecha Inicial...">
+			</div>
+
+			<div id="secret2" class="col-xs-10 col-md-2">
+				<input class="form-control input-sm" name="max" id="max" type="hidden" placeholder="Fecha Final...">
+			</div>
+			<span class="input-group-addon"></span>
+
+
+		</div>
+
+
+		<div class="row">
+			<div class="starter-template">
+			</div>
+		</div>
+
+		<div class="row">
+			<section>
+				<div class="col-md-12">
+					<div class="table-responsive-sm">
+						<table id="example" tableexport-key="tabla" class="table display">
+							<thead>
+								<tr>
+									<th>nombre</th>
+									<th>primer_apellido</th>
+									<th>segundo_apellido</th>
+									<th>telefono</th>
+									<th>actualizar</th>
+								</tr>
+							</thead>
+							<tfoot>
+								<tr>
+									<th>Filter..</th>
+									<th>Filter..</th>
+									<th>Filter..</th>
+									<th>Filter..</th>
+									<th>Filter..</th>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+
+				</div>
+
+				<button id="btnExportar" onclick="dataContentExportExl('example','Ideas')"
+					class="btn btn-success clearfix" style="margin-left: 2%"> EXPORT TO EXCEL </button>
+
+			</section>
+		</div>
+	</div>
+
+	<script>
+	/*********************************************SE PUEDE OMITIR PONIENDOLO EN UN JS A PARTE ***********************/
+		const $btnExportar = document.querySelector("#btnExportar"),
+			$tabla = document.querySelector("#example");
+
+		$btnExportar.addEventListener("click", function () {
+			let tableExport = new TableExport($tabla, {
+				exportButtons: false, // No queremos botones
+				filename: "CIAS", //Nombre del archivo de Excel
+				sheetname: "Datos del CIAS", //Título de la hoja
+			});
+			let datos = tableExport.getExportData();
+			let preferenciasDocumento = datos.tabla.xlsx;
+			tableExport.export2file(preferenciasDocumento.data, preferenciasDocumento.mimeType, preferenciasDocumento.filename, preferenciasDocumento.fileExtension, preferenciasDocumento.merges, preferenciasDocumento.RTL, preferenciasDocumento.sheetname);
+		});
+
+		var server;
+		$(document).ready(function () {
+
+
+			server = "http://" + window.location.host + "/CIAS/rest/CIASQ/persona/";
+
+			$('#example tfoot th').each(function () {
+				var title = $(this).text();
+				$(this).html('<input type="text" placeholder="Filtrar..." class=" form-control input-sm" size="3px" />');
+			});
+
+			var tabla = $('#example').DataTable({
+				"responsive": true,
+				"ajax": {
+					"url": "http://" + window.location.host + "/CIAS/rest/CIASQ/persona",
+					"dataSrc": "data"
+				},
+				"columns": [
+					{ "data": "nombre" },
+					{ "data": "primer_apellido" },
+					{ "data": "segundo_apellido" },
+					{ "data": "telefono" },
+					{ "data": "actualizar" }
+				],
+				"initComplete": function () {
+					this.api().columns().every(function () {
+						var that = this;
+						$('input', this.footer()).on('keyup change', function () {
+							if (that.search() !== this.value) {
+								that
+									.search(this.value)
+									.draw();
+							}
+						});
+					});
+				},
+				"deferRender": true,
+				"autoWidth": false,
+				"search": {
+					"regex": true,
+					"caseInsensitive": false,
+				},
+			});
+
+			$.fn.dataTable.ext.search.push(
+				function (settings, data, dataIndex) {
+					var min = $('#min').datepicker('getDate');
+					var max = $('#max').datepicker('getDate');
+					var startDate = new Date(data[4]);
+					if (min == null && max == null) return true;
+					if (min == null && startDate <= max) return true;
+					if (max == null && startDate >= min) return true;
+					if (startDate <= max && startDate >= min) return true;
+					return false;
+				}
+			);
+
+			$('#min').datepicker({ onSelect: function () { table.draw(); }, changeMonth: true, changeYear: true });
+			$('#max').datepicker({ onSelect: function () { table.draw(); }, changeMonth: true, changeYear: true });
+			var table = $('#example').DataTable();
+
+			$('#min, #max').change(function () {
+				table.draw();
+			});
+			//
+		});
+
+		$(document).ready(function () {
+			$('#guardar').click(function () {
+				agregar();
+			});
+			$('#update').click(function () {
+				actualizado();
+			});
+		});
+
+		function pulsar(e) {
+			if (e.keyCode === 13 && !e.shiftKey) {
+				buscar();
+			}
+		}
+
+
+		function buscar() {
+			var buscarP = $("#namesearch").val();
+			
+			if (buscarP.length > 1 ) {
+				$('#example').DataTable({
+					dom: 'lrtip',
+					destroy: true,
+					"responsive": true,
+					"ajax": {
+						"url": "http://" + window.location.host + "/CIAS/rest/CIASQ/buscar/" + buscarP,
+						"dataSrc": "data"
+					},
+					"columns": [
+						{ "data": "nombre" },
+						{ "data": "primer_apellido" },
+						{ "data": "segundo_apellido" },
+						{ "data": "telefono" },
+						{ "data": "actualizar" }
+					],
+					"initComplete": function () {
+						this.api().columns().every(function () {
+							var that = this;
+							$('input', this.footer()).on('keyup change', function () {
+								if (that.search() !== this.value) {
+									that
+										.search(this.value)
+										.draw();
+								}
+							});
+						});
+					},
+					deferRender: true,
+					"autoWidth": false,
+					"search": {
+						"regex": true,
+						"caseInsensitive": false,
+					},
+				});
+				$("#from").val('');
+				$("#to").val('');
+
+			} else {
+				alert("Falta campo requerido u.u");
+			}
+		}
+
+
+		function actu(id) {
+			$('#idU').val(id);
+		}
+
+		function agregar() {
+			var nombre = document.getElementById('nombre').value;
+			var papellido = document.getElementById('papellido').value;
+			var sapellido = document.getElementById('sapellido').value;
+			var telefono = document.getElementById('telefono').value;
+
+			var urlS = "http://" + window.location.host + "/CIAS/rest/CIASQ/agregar/" + nombre + "/" + papellido + "/" + sapellido + "/" + telefono;
+			console.log(urlS);
+
+			$('#example').DataTable({
+				dom: 'lrtip',
+				destroy: true,
+				"responsive": true,
+				"ajax": {
+					"url": "http://" + window.location.host + "/CIAS/rest/CIASQ/agregar/" + nombre + "/" + papellido + "/" + sapellido + "/" + telefono,
+					"dataSrc": "data"
+				},
+				"columns": [
+					{ "data": "nombre" },
+					{ "data": "primer_apellido" },
+					{ "data": "segundo_apellido" },
+					{ "data": "telefono" },
+					{ "data": "actualizar" }
+				],
+				"initComplete": function () {
+					this.api().columns().every(function () {
+						var that = this;
+						$('input', this.footer()).on('keyup change', function () {
+							if (that.search() !== this.value) {
+								that
+									.search(this.value)
+									.draw();
+							}
+						});
+					});
+				},
+				"deferRender": true,
+				"autoWidth": false,
+				"search": {
+					"regex": true,
+					"caseInsensitive": true,
+				},
+
+			});
+			refrescando();
+
+
+		}
+
+		function actualizado() {
+			var id = document.getElementById('idU').value;
+			var nombreU = document.getElementById('nombreU').value;
+			var papellidoU = document.getElementById('papellidoU').value;
+			var sapellidoU = document.getElementById('sapellidoU').value;
+			var telefonoU = document.getElementById('telefonoU').value;
+
+			$('#example').DataTable({
+				dom: 'lrtip',
+				destroy: true,
+				"responsive": true,
+				"ajax": {
+					"url": "http://" + window.location.host + "/CIAS/rest/CIASQ/actualizar/" + nombreU + "/" + papellidoU + "/" + sapellidoU + "/" + telefonoU + "/" + id,
+					"dataSrc": "data"
+				},
+				"columns": [
+					{ "data": "nombre" },
+					{ "data": "primer_apellido" },
+					{ "data": "segundo_apellido" },
+					{ "data": "telefono" },
+					{ "data": "actualizar" }
+				],
+				"initComplete": function () {
+					this.api().columns().every(function () {
+						var that = this;
+						$('input', this.footer()).on('keyup change', function () {
+							if (that.search() !== this.value) {
+								that
+									.search(this.value)
+									.draw();
+							}
+						});
+					});
+				},
+				"deferRender": true,
+				"autoWidth": false,
+				"search": {
+					"regex": true,
+					"caseInsensitive": true,
+				},
+
+			});
+			refrescando();
+
+		}
+
+		$("#trigger").hover(function () {
+		}, function (e) {
+		});
+
+		function refrescando() {
+			setTimeout(refrescar, 100);
+		}
+		function refrescar() {
+			location.reload();
+		}
+
+	</script>
+
+</body>
+
+</html>
